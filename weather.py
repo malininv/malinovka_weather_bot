@@ -11,7 +11,7 @@ def create_message(index):
 
     day = response['forecast']['forecastday'][index]['date']
     date = datetime.strptime(day, '%Y-%m-%d')
-    date_converted = date.strftime('%x %A')
+    date_converted = date.strftime('%d.%m.%Y')
 
     hours = response['forecast']['forecastday'][index]['hour']
 
