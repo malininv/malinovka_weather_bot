@@ -1,11 +1,14 @@
 import requests
 from datetime import datetime
 import os
-import locale
 
 API_KEY_WEATHER = os.environ['API_KEY_WEATHER']
-locale.setlocale(locale.LC_ALL, '')
 
+
+def get_weekday(number):
+    weekday_map = {0: 'Понедельник', 1: 'Вторник', 2: 'Среда', 3: 'Четверг', 4: 'Пятница', 5: 'Суббота',
+                   6: 'Воскресенье'}
+    return weekday_map.get(number)
 
 def create_message(index):
     response = requests.get(f'http://api.weatherapi.com/v1/forecast.json?key={API_KEY_WEATHER}'
@@ -14,7 +17,8 @@ def create_message(index):
 
     day = response['forecast']['forecastday'][index]['date']
     date = datetime.strptime(day, '%Y-%m-%d')
-    date_converted = date.strftime('%d.%m.%Y')
+    week_day = get_weekday(date.weekday())
+    date_converted = date.strftime('%d.%m.%Y ') + week_day
 
     hours = response['forecast']['forecastday'][index]['hour']
 
