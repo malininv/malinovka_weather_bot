@@ -1,11 +1,8 @@
 import requests
 from datetime import datetime
-import locale
 import os
 
 API_KEY_WEATHER = os.environ['API_KEY_WEATHER']
-
-locale.setlocale(locale.LC_ALL, ('ru_RU', 'UTF-8'))
 
 
 def create_message(index):
