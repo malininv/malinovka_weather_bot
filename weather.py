@@ -1,8 +1,11 @@
 import requests
 from datetime import datetime
 import os
+import locale
 
 API_KEY_WEATHER = os.environ['API_KEY_WEATHER']
+locale.setlocale(locale.LC_ALL, '')
+
 
 def create_message(index):
     response = requests.get(f'http://api.weatherapi.com/v1/forecast.json?key={API_KEY_WEATHER}'
