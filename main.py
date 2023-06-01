@@ -1,5 +1,5 @@
 from aiogram import Bot, Dispatcher, executor, types
-from weather import create_message
+from weather import create_message, DAYS_WEATHER
 import os
 
 API_KEY_BOT = os.environ['API_KEY_BOT']
@@ -15,9 +15,8 @@ async def send_welcome(message: types.Message):
 
 @dp.message_handler()
 async def echo(message: types.Message):
-    days = 3
-    for i in range(days):
-        await message.answer(create_message(i), parse_mode='HTML')
+    for day in range(DAYS_WEATHER):
+        await message.answer(create_message(day), parse_mode='HTML')
 
 
 if __name__ == '__main__':

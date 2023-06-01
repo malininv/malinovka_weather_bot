@@ -3,7 +3,7 @@ from datetime import datetime
 import os
 
 API_KEY_WEATHER = os.environ['API_KEY_WEATHER']
-
+DAYS_WEATHER = 3
 
 def get_weekday(number):
     weekday_map = {0: 'Понедельник', 1: 'Вторник', 2: 'Среда', 3: 'Четверг', 4: 'Пятница', 5: 'Суббота',
@@ -12,7 +12,7 @@ def get_weekday(number):
 
 def create_message(index):
     response = requests.get(f'http://api.weatherapi.com/v1/forecast.json?key={API_KEY_WEATHER}'
-                            f'&q=53.41257639604621, 87.28455129798549&days=3&aqi=no&alerts=no&lang=ru').json()
+                            f'&q=53.41257639604621, 87.28455129798549&days={DAYS_WEATHER}&aqi=no&alerts=no&lang=ru').json()
     index_map = {0: 'Сегодня', 1: 'Завтра', 2: 'Послезавтра'}
 
     day = response['forecast']['forecastday'][index]['date']
