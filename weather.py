@@ -5,26 +5,37 @@ import os
 API_KEY_WEATHER = os.environ['API_KEY_WEATHER']
 DAYS_WEATHER = 3
 
-def get_weekday(number):
+
+def get_weekday(number: int) -> str:
     weekday_map = {0: 'Понедельник', 1: 'Вторник', 2: 'Среда', 3: 'Четверг', 4: 'Пятница', 5: 'Суббота',
                    6: 'Воскресенье'}
     return weekday_map.get(number)
 
+
+def get_json_from_api():
+    return requests.get(f'http://api.weatherapi.com/v1/forecast.json?key={API_KEY_WEATHER}'
+                        f'&q=53.41257639604621, 87.28455129798549&days={DAYS_WEATHER}&aqi=no&alerts=no&lang=ru').json()
+
+
+def get_converted_day_and_weekday(date: str) -> (str, str):
+    converted_day_date = datetime.strptime(date, '%Y-%m-%d')
+    weekday = get_weekday(converted_day_date.weekday())
+    return converted_day_date.strftime('%d.%m.%Y '), weekday
+
+
+def get_relative_date(index):
+    relative_date_map = {0: 'Сегодня', 1: 'Завтра', 2: 'Послезавтра'}
+    return relative_date_map.get(index)
+
+
 def create_message(index):
-    response = requests.get(f'http://api.weatherapi.com/v1/forecast.json?key={API_KEY_WEATHER}'
-                            f'&q=53.41257639604621, 87.28455129798549&days={DAYS_WEATHER}&aqi=no&alerts=no&lang=ru').json()
-    index_map = {0: 'Сегодня', 1: 'Завтра', 2: 'Послезавтра'}
-
-    day = response['forecast']['forecastday'][index]['date']
-    date = datetime.strptime(day, '%Y-%m-%d')
-    week_day = get_weekday(date.weekday())
-    date_converted = date.strftime('%d.%m.%Y ') + week_day
-
-    hours = response['forecast']['forecastday'][index]['hour']
-
-    title = f'<b>{index_map.get(index)} - {date_converted}</b>\n'
+    response = get_json_from_api()
+    forecast = response['forecast']['forecastday'][index]
+    date, hours = forecast['date'], forecast['hour']
+    day, week_day = get_converted_day_and_weekday(date)
+    relative_date = get_relative_date(index)
+    title = f'<b>{relative_date} - {day} {week_day}</b>\n'
     list_of_hours = create_hours(hours)
-
     return title + list_of_hours
 
 
@@ -46,15 +57,19 @@ def get_emoji_by_code(code):
     return '⛅️'
 
 
+def get_converted_hour(hour: str) -> str:
+    converted_hour = datetime.strptime(hour, '%Y-%m-%d %H:%M')
+    return converted_hour.strftime('%H:%M')
+
+
 def create_hours(hours):
     every_second_hour = [hours[index] for index in range(0, len(hours), 2)]
     hour_info = ''
     for hour in every_second_hour:
-        date_hour = datetime.strptime(hour['time'], '%Y-%m-%d %H:%M')
-        date_hour_converted = date_hour.strftime('%H:%M')
+        hour_converted = get_converted_hour(hour['time'])
         temperature = hour['temp_c']
         wind = hour['wind_kph']
         emoji = get_emoji_by_code(hour['condition']['code'])
         chance_of_rain = hour['chance_of_rain']
-        hour_info += f'{date_hour_converted}: {round(temperature)}&#176;C {emoji} {wind} км/ч {chance_of_rain}% в.о.\n'
+        hour_info += f'{hour_converted}: {round(temperature)}&#176;C {emoji} {wind} км/ч {chance_of_rain}% в.о.\n'
     return hour_info

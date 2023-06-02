@@ -10,7 +10,7 @@ dp = Dispatcher(bot)
 
 @dp.message_handler(commands=['start', 'help'])
 async def send_welcome(message: types.Message):
-    await message.answer('Привет!\n\nОтправь любое сообщение чтобы получить погоду в Малиновке на 3 дня.')
+    await message.answer('Привет! 😊\n\nОтправь любое сообщение чтобы получить погоду в Малиновке на 3 дня.🌈')
 
 
 @dp.message_handler()
@@ -20,4 +20,5 @@ async def echo(message: types.Message):
 
 
 if __name__ == '__main__':
-    executor.start_polling(dp)
+    executor.start_polling(dp, skip_updates=True)
+    executor.start_webhook(dp)
